@@ -9,6 +9,7 @@ import java.util.Optional;
 public interface TodoRepository extends JpaRepository<Todo, Long> {
     List<Todo> findByDueDate(String dueDate);
     List<Todo> findByUser(User user);
+    Optional<Todo> findByIdAndUser_Id(Long id,Long User_Id);
 
     List<Todo> findByDueDateAndUser(String dueDate, Optional<User> user);
 }

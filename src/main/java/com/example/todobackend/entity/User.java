@@ -1,6 +1,7 @@
 package com.example.todobackend.entity;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "users")
@@ -14,7 +15,16 @@ public class User {
 
     private String email;
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+    @JsonIgnore
     private String password;
+    private String role;
 
     public User() {
     }

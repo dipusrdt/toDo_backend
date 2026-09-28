@@ -3,7 +3,6 @@ package com.example.todobackend.service;
 import com.example.todobackend.entity.Todo;
 import com.example.todobackend.entity.User;
 import com.example.todobackend.repository.TodoRepository;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import com.example.todobackend.repository.UserRepository;
 
@@ -50,7 +49,12 @@ public class  TodoService {
         Optional<User> user=userRepository.findById(id);
         return todoRepository.findByDueDateAndUser(dueDate, user);
     }
-    public void deleteTodo(Long id) {
-        todoRepository.deleteById(id);
+    public boolean deleteTodo(Long id,Long userId) {
+        Optional<Todo> todo = todoRepository.findByIdAndUser_Id(id, userId);
+        if (todo.isEmpty()) {
+            return false;
+        }
+        todoRepository.delete(todo.get());
+        return true;
     }
 }
