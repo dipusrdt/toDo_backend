@@ -1,5 +1,6 @@
 package com.example.todobackend.controller;
 
+import com.example.todobackend.dto.DoneRequest;
 import com.example.todobackend.entity.Todo;
 import com.example.todobackend.service.TodoService;
 import org.springframework.http.ResponseEntity;
@@ -53,5 +54,14 @@ public class TodoController {
         Long userId = jwt.getClaim("id");
         boolean deleted = todoService.deleteTodo(id, userId);
         return deleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+    @PutMapping("/api/todos/{id}/done")
+    public ResponseEntity<Todo> setDone(@PathVariable Long id,
+                                        @RequestBody DoneRequest request,
+                                        @AuthenticationPrincipal Jwt jwt) {
+        Long userId = jwt.getClaim("id");
+        return todoService.setDone(id, userId, request.done())
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

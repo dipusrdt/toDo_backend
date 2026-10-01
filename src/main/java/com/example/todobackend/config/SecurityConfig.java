@@ -13,6 +13,9 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
+import org.springframework.security.core.GrantedAuthority;
+import java.util.ArrayList;
+import java.util.Collection;
 
 @Configuration
 @EnableMethodSecurity
@@ -27,6 +30,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(auth -> {
             auth.requestMatchers("/api/hello").permitAll();
+            auth.requestMatchers("/api/internal/**").hasAuthority("SCOPE_todos.internal.read");
             auth.anyRequest().authenticated();
         });
 
@@ -38,11 +42,19 @@ public class SecurityConfig {
 
     @Bean
     JwtAuthenticationConverter jwtAuthenticationConverter() {
-        JwtGrantedAuthoritiesConverter authoritiesConverter = new JwtGrantedAuthoritiesConverter();
-        authoritiesConverter.setAuthoritiesClaimName("role");
-        authoritiesConverter.setAuthorityPrefix("ROLE_");
+        JwtGrantedAuthoritiesConverter roleConverter = new JwtGrantedAuthoritiesConverter();
+        roleConverter.setAuthoritiesClaimName("role");
+        roleConverter.setAuthorityPrefix("ROLE_");
+
+        JwtGrantedAuthoritiesConverter scopeConverter = new JwtGrantedAuthoritiesConverter();
+
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        converter.setJwtGrantedAuthoritiesConverter(authoritiesConverter);
+        converter.setJwtGrantedAuthoritiesConverter(jwt -> {
+            Collection<GrantedAuthority> authorities = new ArrayList<>();
+            authorities.addAll(roleConverter.convert(jwt));
+            authorities.addAll(scopeConverter.convert(jwt));
+            return authorities;
+        });
         return converter;
     }
 

@@ -12,4 +12,5 @@ public interface TodoRepository extends JpaRepository<Todo, Long> {
     Optional<Todo> findByIdAndUser_Id(Long id,Long User_Id);
 
     List<Todo> findByDueDateAndUser(String dueDate, Optional<User> user);
+    List<Todo> findByDueDateAndDoneFalse(String dueDate);
 }

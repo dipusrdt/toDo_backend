@@ -6,6 +6,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Column;
 
 @Entity
 public class Todo {
@@ -14,12 +15,21 @@ public class Todo {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    public boolean isDone() {
+        return done;
+    }
+
+    public void setDone(boolean done) {
+        this.done = done;
+    }
 
     private String title;
 
     private String description;
     private String date;
     private String dueDate;
+    @Column(nullable = false, columnDefinition = "boolean default false")
+    private boolean done = false;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;

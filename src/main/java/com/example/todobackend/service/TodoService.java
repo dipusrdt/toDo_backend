@@ -5,6 +5,7 @@ import com.example.todobackend.entity.User;
 import com.example.todobackend.repository.TodoRepository;
 import org.springframework.stereotype.Service;
 import com.example.todobackend.repository.UserRepository;
+import com.example.todobackend.dto.DueTodoResponse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -56,5 +57,22 @@ public class  TodoService {
         }
         todoRepository.delete(todo.get());
         return true;
+    }
+    public Optional<Todo> setDone(Long id,
+                                  Long userId,
+                                  boolean done){
+        Optional <Todo> todo=todoRepository.findByIdAndUser_Id(id,userId);
+        todo.ifPresent(t->{
+            t.setDone(done);
+            todoRepository.save(t);
+        });
+        return todo;
+    }
+    public List<DueTodoResponse> getDueTodosForReminder(String dueDate) {
+        return todoRepository.findByDueDateAndDoneFalse(dueDate).stream()
+                .filter(t -> t.getUser() != null && t.getUser().getEmail() != null)
+                .map(t -> new DueTodoResponse(t.getId(), t.getTitle(), t.getDueDate(),
+                        t.getUser().getEmail(), t.getUser().getName()))
+                .toList();
     }
 }
